@@ -12,7 +12,7 @@ EC2_target_value = 'work' #value in tag casual
 
 db_config = {'user': 'admin',
              'password': '12345678',
-             'host': 'managerdata.c3fcxrbhjwar.us-east-1.rds.amazonaws.com',
+             'host': 'alldata.c3fcxrbhjwar.us-east-1.rds.amazonaws.com',
              'database': 'mydb'}
 
 DATABASE_ID = 'managerData'
