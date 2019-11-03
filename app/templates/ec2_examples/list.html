@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <form action="{{url_for('ec2_create')}}" method="post">
+        <input type="submit" value="New">
+    </form>
+
+    <br>
+    <br>
+    <h2>Auto Scaling Policy </h2>
+    <br>
+    <h4> Status: {{ scaleStatus}}</h4>
+    <form action="/ec2_examples/configscaling" method="post">
+    <button class="btn btn-primary active" name="autoScaling" value="ON">On</button>
+    <button class="btn btn-secondary active" name="autoScaling" value="OFF">Off</button>
+    </form>
+    
+        <br>
+     <form role="form" class="form-inline" action="/ec2_examples/scaling/" method="post">
+     {% with messages = get_flashed_messages()%}
+       {% if messages %}
+         {% for message in messages %}
+           <div class="alert alert-warning">
+             <strong>Warning! </strong>{{ message}}
+           </div>
+         {% endfor %}
+       {% endif %}
+     {% endwith %}
+      <table class="table table-hover" />
+    <thead>
+       <th>Parameter</th>
+       <th>Value</th>
+       <th><span style="padding-left:20px;">New Value</span></th>
+       <th>Submit</th>
+    </thead>
+    <tr>
+        <td>Upper Bound</td>
+        <td>{{ upperBound}}</td>
+        <td>
+            <div class="form-group col-md-4">
+                <input type="text" name="upperBound" class="form-control input-normal" />
+            </div>
+        </td>
+        <td> <input type="submit" value="Submit" class="btn btn-danger"></td>
+    </tr>
+        <tr>
+        <td>Lower Bound</td>
+        <td>{{ lowerBound }}</td>
+          <td>
+            <div class="form-group col-md-4">
+                <input type="text" name="lowerBound" class="form-control input-normal" />
+            </div>
+        </td>
+        <td> <input type="submit" value="Submit" class="btn btn-danger"></td>
+    </tr>
+        <tr>
+        <td>Scale Up</td>
+        <td>{{ scaleUp }}</td>
+         <td>
+            <div class="form-group col-md-4">
+                <input type="text" name= "scaleUp" class="form-control input-normal" />
+            </div>
+        </td>
+        <td> <input type="submit" value="Submit" class="btn btn-danger"></td>
+
+    </tr>
+        <tr>
+        <td>Scale Down</td>
+        <td>{{ scaleDown }}</td>
+         <td>
+            <div class="form-group col-md-4">
+                <input type="text"name= "scaleDown" class="form-control input-normal" />
+            </div>
+        </td>
+        <td> <input type="submit"  value="Submit" class="btn btn-danger"></td>
+    </tr>
+
+
+    </table>
+     </form>
+    <br>
+    <br>
+
+    <hr/>
+    <h2>User Data</h2>
+    <form action="{{url_for('delete_all_userdata')}}" method="post" onsubmit='return confirm("Are you sure?")'>
+        <input type="submit" value="Delete All User Data" class="btn btn-danger">
+    </form>
+    <br>
+    <br>
+    <hr/>
+    <h2>S3 Instances</h2>
+    <table class="table table-hover"/>
+        <thead>
+           <th>Name</th>
+           <th>Creation Time</th>
+           <th></th>
+        </thead>
+        {% for bucket in buckets %}
+            <tr>
+                <td>{{ bucket.name }}</td>
+                <td>{{ bucket.creation_date }}</td>
+                <td>
+                    <form action="{{url_for('s3_view',id=bucket.name)}}" method='get'>
+                        <input type='submit' value='Details' class="btn btn-info"/>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    <br>   
+    <hr/>
+    <h2>EC2 Instance Information </h2>
+    <form action="{{url_for('ec2_create')}}" method="post">
+        <input type="submit" value="New" class="btn btn-primary">
+    </form>
+
+    <table class="table table-hover" />
+    <!--
+    <table />
+    -->
+    <thead>
+       <th>ID</th>
+       <th>Type</th>
+       <th>Availability Zone</th>
+       <th>Status</th>
+    </thead> 
+    {% for instance in instances %}
+        <tr>
+            <td>{{ instance.id }}</td>
+            <td>{{ instance.instance_type }}</td>
+            <td>{{ instance.placement['AvailabilityZone']}}</td>
+            <td>{{ instance.state['Name'] }}</td>
+            <td>
+                <form action="{{url_for('ec2_view',id=instance.id)}}" method='get'>
+                    <input type='submit' value='Details' />
+                </form>
+            </td>
+         
+            <td>
+                <form action="{{url_for('ec2_destroy',id=instance.id)}}" method='post' onsubmit='return confirm("Are you sure?")'>
+                    <input type='submit' value='Destroy' />
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+{% endblock %}
