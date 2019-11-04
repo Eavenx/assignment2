@@ -1,10 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
 
-    <form action="{{url_for('ec2_create')}}" method="post">
-        <input type="submit" value="New">
-    </form>
-
     <br>
     <br>
     <h2>Auto Scaling Policy </h2>
@@ -120,13 +116,54 @@
     <table />
     -->
     <thead>
+        <th>Name</th>
        <th>ID</th>
        <th>Type</th>
        <th>Availability Zone</th>
        <th>Status</th>
-    </thead> 
+       <th></th>
+       <th></th>
+    </thead>
+    <!--print database and manager seperately-->
     {% for instance in instances %}
         <tr>
+         {% if( instance.id == manager) %}
+            <td><b>Manager</b> {{ instance.tags[0]['Value'] }}</td>
+            <td>{{ instance.id }}</td>       
+            <td>{{ instance.instance_type }}</td>
+            <td>{{ instance.placement['AvailabilityZone']}}</td>
+            <td>{{ instance.state['Name'] }}</td>
+            <td>
+                <form action="{{url_for('ec2_view',id=instance.id)}}" method='get'>
+                    <input type='submit' value='Details' class="btn btn-info" />
+                </form>
+            </td>
+            <td>
+            </td>
+        {% endif %}
+        {%   if( instance.id == database) %}
+             <td><b>Database</b> {{ instance.tags[0]['Value'] }}</td>
+            <td>{{ instance.id }}</td>
+            <td>{{ instance.instance_type }}</td>
+            <td>{{ instance.placement['AvailabilityZone']}}</td>
+            <td>{{ instance.state['Name'] }}</td>
+            <td>
+                <form action="{{url_for('ec2_view',id=instance.id)}}" method='get'>
+                    <input type='submit' value='Details' class="btn btn-info" />
+                </form>
+            </td>
+
+            <td>
+            </td>
+        {% endif %}
+        </tr>
+                                                                                                                                   
+    {% endfor %}
+
+    {% for instance in instances %}
+        <tr>
+        {%  if(( instance.tags[0]['Value'] == 'work' ) and (instance.state['Name'] != 'terminated')) %}
+            <td></td>
             <td>{{ instance.id }}</td>
             <td>{{ instance.instance_type }}</td>
             <td>{{ instance.placement['AvailabilityZone']}}</td>
@@ -142,6 +179,7 @@
                     <input type='submit' value='Destroy' />
                 </form>
             </td>
+            {% endif %}
         </tr>
     {% endfor %}
     </table>

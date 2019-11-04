@@ -12,3 +12,4 @@ from app import s3_examples
 
 from app import main
 from app import elb_op
+from app import config

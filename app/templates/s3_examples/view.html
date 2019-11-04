@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-    <form action='{{url_for("s3_list")}}' method='get'>
-        <input type='submit' value='Back' />
+    <form action='{{url_for("ec2_list")}}' method='get'>
+        <input type='submit' value='Back' class="btn btn-primary" />
     </form>
-
+    <br/>
     <form action='{{url_for("s3_upload",id=id)}}' method='post' enctype='multipart/form-data' onsubmit="return validateForm()">
         <input type='file' id='new_file' name='new_file' accept='application/pdf'>
         <input type="submit" value="Upload New File" />
