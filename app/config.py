@@ -1,4 +1,4 @@
-ami_id = 'ami-baf632ac' #need change to 632ac
+ami_id = 'ami-0df7fa91aa9ef7ed9' #need change to new ami
 EC2_count = 1
 EC2_userdata = 'userdata' #casual
 EC2_instance = 't2.micro'
