@@ -1,5 +1,5 @@
 import collections
-from flask import render_template, redirect, url_for, request, flash
+from flask import render_template, redirect, url_for, request, flash, session
 from app import webapp, db
 import json
 import boto3
@@ -10,6 +10,11 @@ from app import elb_op
 import mysql.connector
 from pytz import timezone
 
+from app.autoscale import increase_worker_nodes
+from app.autoscale import decrease_worker_nodes
+
+#global
+flagmsg = 0 #appear message once
 
 class RequestPerMinute(db.Model):
     __tablename__ = 'requestperminute'
@@ -53,22 +58,28 @@ def get_time_span(latest):
 
 @webapp.route('/', methods=['GET'])
 @webapp.route('/index', methods=['GET'])
+def clear():
+    session.clear()
+    return redirect(url_for('main'))
+
 @webapp.route('/main', methods=['GET'])
 def main():
+    global flagmsg
+
     # Display an HTML list of all ec2 instances
     # create connection to ec2
     ec2 = boto3.resource('ec2')
 
     instances = ec2.instances.all()
 
-    # Test CloudWatch avgs
-    workers_list = []
+    # calculate workerpool
+    workerpool = 0
     for instance in instances:
         # filter db and mananger
         if instance.id != config.MANAGER_ID:
-            if (instance.state['Name'] != 'terminated') and (len(instance.tags) != 0):
+            if (instance.state['Name'] != ('terminated' or 'shutting-down')) and (len(instance.tags) != 0):
                 if instance.tags[0]['Value'] == 'work':
-                    workers_list.append(instance.id)
+                    workerpool = workerpool + 1
 
     # Open DB Connection
     cnx = mysql.connector.connect(user=config.db_config['user'], password=config.db_config['password'],
@@ -101,15 +112,22 @@ def main():
     elbA2Des = elb['LoadBalancerDescriptions']
     elbDNS = elbA2Des[0]['DNSName']
 
+    if flagmsg == 1:
+        session.pop('msg')
+        flagmsg = 0
+    elif 'msg' in session:
+        flagmsg = 1
+
     return render_template("ec2_examples/list.html", title="Manager UI", instances=instances,
                            manager=config.MANAGER_ID,
-                           database=config.DATABASE_ID,
+
                            upperBound=AUTO_upper_bound,
                            lowerBound=AUTO_lower_bound,
                            scaleUp=AUTO_scale_up,
                            scaleDown=AUTO_scale_down,
                            scaleStatus=AUTO_scale,
-                           elbDNS=elbDNS)
+                           elbDNS=elbDNS,
+                           workerpool=workerpool)
 
 
 @webapp.route('/ec2_examples/<id>', methods=['GET'])
@@ -186,7 +204,7 @@ def ec2_create():
         # Add New Instance to ELB
         elb_op.elb_add_instance(instance.id)
 
-    return redirect(url_for('ec2_list'))
+    return redirect(url_for('main'))
 
 
 @webapp.route('/ec2_examples/delete/<id>', methods=['POST'])
@@ -328,4 +346,18 @@ def config_scaling():
     cursor.close()
     cnx.close()
 
+    return redirect(url_for('main'))
+
+
+@webapp.route('/ec2_examples/increase1/', methods=['POST'])
+def increase1():
+    increase_worker_nodes(1)
+    session['msg'] = "Success increase worker pool by 1"
+    return redirect(url_for('main'))
+
+
+@webapp.route('/ec2_examples/decrease1/', methods=['POST'])
+def decrease1():
+    decrease_worker_nodes(1)
+    session['msg'] = "Success decrease worker pool by 1"
     return redirect(url_for('main'))

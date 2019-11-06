@@ -91,7 +91,7 @@ def get_instances_cpu_avg():
 
     if (AUTO_SCALE == 'ON'):
         if instances_average >= AUTO_UPPER_BOUND:
-            print("CPU Average is greather than threshold.")
+            print("CPU Average is greater than threshold.")
             print("Increasing nodes from %d to %f" % (n_instances, n_instances * AUTO_SCALE_UP))
             increase_worker_nodes(int(n_instances * AUTO_SCALE_UP) - n_instances)
         elif instances_average <= AUTO_LOWER_BOUND:
@@ -106,8 +106,8 @@ def increase_worker_nodes(add_instances):
     ec2 = boto3.resource('ec2')
 
     new_instances = ec2.create_instances(ImageId=config.ami_id,
-                                         MinCount=config.EC2_count,
-                                         MaxCount=config.EC2_count,
+                                         MinCount=add_instances,
+                                         MaxCount=add_instances,
                                          UserData=config.EC2_userdata,
                                          InstanceType=config.EC2_instance,
                                          KeyName=config.EC2_keyName,
@@ -191,4 +191,4 @@ def decrease_worker_nodes(delete_instances):
             instance.terminate()  # Terminate Instance
 
 # EXECUTE AUTOSCALE
-get_instances_cpu_avg()
+#get_instances_cpu_avg()

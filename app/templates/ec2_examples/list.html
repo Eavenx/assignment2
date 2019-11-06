@@ -1,84 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
 
-    <br>
-    <br>
-    <h2>Auto Scaling Policy </h2>
-    <br>
-    <h4> Status: {{ scaleStatus}}</h4>
-    <form action="/ec2_examples/configscaling" method="post">
-    <button name="autoScaling" value="ON">On</button>
-    <button name="autoScaling" value="OFF">Off</button>
-    </form>
-    
-        <br>
-     <form role="form" action="/ec2_examples/scaling/" method="post">
-     {% with messages = get_flashed_messages()%}
-       {% if messages %}
-         {% for message in messages %}
-           <div class="alert alert-warning">
-             <strong>Warning! </strong>{{ message}}
-           </div>
-         {% endfor %}
-       {% endif %}
-     {% endwith %}
-      <table />
-    <thead>
-       <th>Parameter</th>
-       <th>Value</th>
-       <th><span style="padding-left:20px;">New Value</span></th>
-       <th>Submit</th>
-    </thead>
-    <tr>
-        <td>Upper Bound</td>
-        <td>{{ upperBound}}</td>
-        <td><input type="text" name="upperBound" /></td>
-        <td> <input type="submit" value="Submit"></td>
-    </tr>
-        <tr>
-        <td>Lower Bound</td>
-        <td>{{ lowerBound }}</td>
-        <td><input type="text" name="lowerBound"  /></td>
-        <td> <input type="submit" value="Submit"></td>
-    </tr>
-        <tr>
-        <td>Scale Up</td>
-        <td>{{ scaleUp }}</td>
-         <td><input type="text" name= "scaleUp" /></td>
-        <td> <input type="submit" value="Submit"></td>
-
-    </tr>
-        <tr>
-        <td>Scale Down</td>
-        <td>{{ scaleDown }}</td>
-         <td>
-            <div class="form-group col-md-4">
-                <input type="text"name= "scaleDown" class="form-control input-normal" />
-            </div>
-        </td>
-        <td> <input type="submit"  value="Submit" class="btn btn-danger"></td>
-    </tr>
-
-
-    </table>
-     </form>
-    <br>
-    <br>
-
     <hr/>
 
-    <h2>Load Balancer DNSName</h2>
-    <br>
-    {{ elbDNS }}
-
-    
-    
-    <hr/>
     <h2>EC2 Instance Information </h2>
     <form action="{{url_for('ec2_create')}}" method="post">
         <input type="submit" value="New">
     </form>
-        
+
     <table />
 
     <thead>
@@ -100,7 +29,7 @@
                     <input type='submit' value='Details' />
                 </form>
             </td>
-         
+
             <td>
                 <form action="{{url_for('ec2_destroy',id=instance.id)}}" method='post' onsubmit='return confirm("Are you sure?")'>
                     <input type='submit' value='Destroy' />
@@ -111,10 +40,93 @@
     {% endfor %}
     </table>
 
+    <hr/>
+
+    <h2>Load Balancer DNSName</h2>
+    <br>
+    {{ elbDNS }}
+
+    <hr/>
+    <h2>Manually change worker pool size</h2>
+    Currently worker pool size: {{ workerpool }}
+    <br>
+    {% if session['msg'] %}
+        {{ session['msg'] }}
+    {% endif %}
+    <br>
+    <form action="{{url_for('increase1')}}" method="post">
+        <input type="submit" value="Increase worker pool by 1">
+    </form>
+    <br>
+    <form action="{{url_for('decrease1')}}" method="post">
+        <input type="submit" value="Decrease worker pool by 1">
+    </form>
+
+
+    <hr/>
+
+    <br>
+    <h2>Auto Scaling Policy </h2>
+    <h4> Status: {{ scaleStatus}}</h4>
+    <form action="/ec2_examples/configscaling" method="post">
+    <button name="autoScaling" value="ON">On</button>
+    <button name="autoScaling" value="OFF">Off</button>
+    </form>
+    
+    <br>
+     <form role="form" action="/ec2_examples/scaling/" method="post">
+     {% with messages = get_flashed_messages()%}
+       {% if messages %}
+         {% for message in messages %}
+           <div class="alert alert-warning">
+             <strong>Warning! </strong>{{ message}}
+           </div>
+         {% endfor %}
+       {% endif %}
+     {% endwith %}
+      <table />
+    <thead>
+       <th>Parameter</th>
+       <th>Value</th>
+       <th><span style="padding-left:20px;">New Value</span></th>
+       <th>Submit</th>
+    </thead>
+    <tr>
+        <td>CPU High Threshold</td>
+        <td>{{ upperBound}}</td>
+        <td><input type="text" name="upperBound" /></td>
+        <td> <input type="submit" value="Submit"></td>
+    </tr>
+        <tr>
+        <td>CPU Low Threshold</td>
+        <td>{{ lowerBound }}</td>
+        <td><input type="text" name="lowerBound"  /></td>
+        <td> <input type="submit" value="Submit"></td>
+    </tr>
+        <tr>
+        <td>Ratio Up</td>
+        <td>{{ scaleUp }}</td>
+         <td><input type="text" name= "scaleUp" /></td>
+        <td> <input type="submit" value="Submit"></td>
+
+    </tr>
+        <tr>
+        <td>Ratio Down</td>
+        <td>{{ scaleDown }}</td>
+         <td><input type="text"name= "scaleDown"  /></td>
+        <td> <input type="submit"  value="Submit"></td>
+    </tr>
+
+
+    </table>
+     </form>
+    <br>
+
+
 
     <hr/>
     <h2>User Data Deletion</h2>
-    <form action="{{url_for('delete_all_userdata')}}" method="post" onsubmit='return confirm("Are you sure?")'>
+    <form action="{{url_for('delete_all_userdata')}}" method="post" onsubmit='return confirm("Are you sure to delete all userdata?")'>
         <input type="submit" value="Delete All User Data">
     </form>
     <br>

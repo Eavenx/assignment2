@@ -17,6 +17,6 @@ db_config = {'user': 'admin',
              'host': 'alldata.c3fcxrbhjwar.us-east-1.rds.amazonaws.com',
              'database': 'mydb'}
 
-DATABASE_ID = 'alldata'
+
 MANAGER_ID = 'i-04ec52fb3814d9025'  # change
 S3_BUCKET_NAME = 'a2homework'
