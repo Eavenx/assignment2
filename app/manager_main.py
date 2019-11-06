@@ -1,14 +1,53 @@
+import collections
 from flask import render_template, redirect, url_for, request, flash
-from app import webapp
-
+from app import webapp, db
+import json
 import boto3
 from app import config
 from datetime import datetime, timedelta
 from operator import itemgetter
-
 from app import elb_op
-
 import mysql.connector
+from pytz import timezone
+
+
+class RequestPerMinute(db.Model):
+    __tablename__ = 'requestperminute'
+    requestid = db.Column(db.Integer, primary_key=True)
+    instance_id = db.Column(db.String(50))
+    timestamp = db.Column(db.DateTime)  # A type for datetime.datetime() objects.
+
+    def __repr__(self):
+        return '<RequestPerMinute {}>'.format(self.instance_id)
+
+
+def get_requests_per_minute(instance, start_time, end_time):
+    datetimes = RequestPerMinute.query.filter(RequestPerMinute.instance_id == instance) \
+        .filter(RequestPerMinute.timestamp <= end_time) \
+        .filter(RequestPerMinute.timestamp >= start_time) \
+        .with_entities(RequestPerMinute.timestamp).all()
+
+    timestamps = list(map(lambda x: int(round(datetime.timestamp(x[0]))), datetimes))
+
+    ret = []
+    dict = collections.Counter(timestamps)
+
+    start_timestamp = int(round(datetime.timestamp(start_time)))
+    end_timestamp = int(round(datetime.timestamp(end_time)))
+
+    for i in range(start_timestamp, end_timestamp, 60):
+        count = 0
+        for j in range(i, i + 60):
+            count += dict[j]
+
+        ret.append([i*1000, count])
+    # print(ret)
+    return json.dumps(ret)
+
+def get_time_span(latest):
+    end_time = datetime.now # (timezone(webapp.config['ZONE']))
+    start_time = end_time - timedelta(seconds=latest)
+    return start_time, end_time
 
 
 @webapp.route('/ec2_examples', methods=['GET'])
@@ -146,11 +185,21 @@ def ec2_view(id):
 
         net_out_stats = sorted(net_out_stats, key=itemgetter(0))
 
+        start_time, end_time = get_time_span(7200)
+        instances = json.loads(request.data.decode('utf-8'))
+        http_request_stats = []
+        for instance in instances:
+            http_request_stats.append({
+                "name": instance,
+                "data": get_requests_per_minute(instance, start_time, end_time)
+            })
+
     return render_template("ec2_examples/view.html", title="Instance Info",
                            instance=instance,
                            cpu_stats=cpu_stats,
                            net_in_stats=net_in_stats,
-                           net_out_stats=net_out_stats)
+                           net_out_stats=net_out_stats,
+                           http_request_stats=http_request_stats)
 
 
 @webapp.route('/ec2_examples/create', methods=['POST'])

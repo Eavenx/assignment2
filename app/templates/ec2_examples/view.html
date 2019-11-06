@@ -26,6 +26,10 @@
 
     <div id="net_out_plot" style="width:300px;height:150px"></div>
 
+    <h2>HTTP request</h2>
+
+    <div id="http_request_plot" style="width:300px;height:150px"></div>
+
 
     <script>
 
@@ -40,6 +44,7 @@
         $.plot($("#cpu_plot"), [ {{ cpu_stats }} ] , options);
         $.plot($("#net_in_plot"), [ {{ net_in_stats }} ] , options);
         $.plot($("#net_out_plot"), [ {{ net_out_stats }} ] , options);
+        $.plot($("#http_request_plot"), [ {{ http_request_status }} ] , options);
 
     </script>
 

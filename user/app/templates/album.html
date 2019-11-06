@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block header %}
+{% endblock %}
+{% block content %}
+        <center><h2>Photo Transformation</h2>
+            <br>
+        <table>
+        <tr>
+        <td align="center">Thumbnail</td>
+        <td align="center">Origin Photo</td>
+        <td align="center">Text Detection</td>
+        </tr>
+        <tr>
+        <td align="center">
+        <a><img src="{{ f2 }}" ></a>
+        </td>
+        <td align="center">
+        <a><img src="{{ f1 }}" width="400px"></a>
+        </td>
+        <td align="center">
+        <a><img src="{{ f3 }}" width="400px"></a>
+        </td>
+        </tr>
+        </table>
+    <a href="{{ url_for('view')}}" class="button">Back to Album</a></center>
+{% endblock %}

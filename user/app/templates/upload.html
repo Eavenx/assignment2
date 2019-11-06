@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block header %}
+{% endblock %}
+{% block content %}
+    <br>
+  <center>{{ error_u if error_u != None}}
+            {{ error if error != None}}
+            {{ success_message if success_message != None}}
+              {{ login_success if login_success != None }}</center>
+    <br>
+    <div align="center">
+      <form method="post" action="/upload" enctype="multipart/form-data">
+              Upload New Pictures:
+                <p><input type="file" name="file">
+                <p><input type="submit" value="Upload">
+                <input type="reset">
+      </form>
+  </div>
+    <br>
+    <div align="center">
+                View Previous Pictures:<br>
+                <a href="{{ url_for('view')}}">
+                    <button>Album</button>
+                </a>
+  </div>
+
+{% endblock %}

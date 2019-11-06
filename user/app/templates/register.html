@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block header %}
+{% endblock %}
+
+{% block content %}
+<br>
+       <center> {{ error if error != None}}
+        <form method='post' action='register_submit'>
+            <br>
+            <div>
+                <label>Username:</label>
+                <input type="text" name="username" value="{{username if username != None}}" />
+            </div>
+
+            <div>
+                <label>Password:</label>
+                <input type="password" name="password"/>
+            </div>
+
+            <div>
+                <label>Confirm Password:</label>
+                <input type="password" name="confirm_password"/>
+            </div>
+<br>
+            <input type="submit" value="Register" /></center>
+        </form>
+{% endblock %}

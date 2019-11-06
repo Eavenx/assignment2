@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block header %}
+{% endblock %}
+{% block content %}
+<center>Click on the thumbnail for the result of transformation.</center>
+    <center><div class="col-md-6">
+
+
+            {% for row in listphoto %}
+                <a href="{{ url_for('showphoto',filename=row[3]) }}"><img src="{{ row[1][4:] }}"></a>
+            {% endfor %}
+    </div><center>
+{% endblock %}

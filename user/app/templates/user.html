@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block header %}
+{% endblock %}
+{% block content %}
+      <center>{{ error_u if error_u != None}}</center>
+        <center>If you are a new user, select Register, else select login.</center>
+        <ul>
+            <li><a href="{{ url_for('register')}}"><center>Register</center></a></li>
+            <li><a href="{{ url_for('login')}}"><center>Login</center></a></li>
+        </ul>
+{% endblock %}
