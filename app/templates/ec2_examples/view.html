@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-    <form action='{{url_for("ec2_list")}}' method='get'>
+    <form action='{{url_for("main")}}' method='get'>
         <input type='submit' value='Back' />
     </form>
 
@@ -13,18 +13,9 @@
     </table>
 
 
-    <h2>CPU</h2>
+    <h2>CPU Utilization (Past 30 minutes)</h2>
 
-    <div id="cpu_plot" style="width:300px;height:150px"></div>
-
-    <h2>Network In</h2>
-
-    <div id="net_in_plot" style="width:300px;height:150px"></div>
-
-
-    <h2>Network Out</h2>
-
-    <div id="net_out_plot" style="width:300px;height:150px"></div>
+    <div id="cpu_plot" style="width:500px;height:500px"></div>
 
     <h2>HTTP request</h2>
 
@@ -42,8 +33,6 @@
 
 
         $.plot($("#cpu_plot"), [ {{ cpu_stats }} ] , options);
-        $.plot($("#net_in_plot"), [ {{ net_in_stats }} ] , options);
-        $.plot($("#net_out_plot"), [ {{ net_out_stats }} ] , options);
         $.plot($("#http_request_plot"), [ {{ http_request_status }} ] , options);
 
     </script>
